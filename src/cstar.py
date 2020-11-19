@@ -1,4 +1,11 @@
+import os
+import tkinter as tk
+from PIL import Image, ImageTk
+
 import map
+
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+IMG_PATH = os.path.join(ROOT_DIR, "../img/cao.png")
 
 
 class Cstar:
@@ -68,9 +75,24 @@ class Cstar:
 
 
 def main():
-    cstar = Cstar(map.MAP_CONFIG)
+    # cstar = Cstar(map.MAP_CONFIG)
+    # print(cstar.cal_longest_route(0))
+    # window = tk.Tk()
 
-    print(cstar.cal_longest_route(0))
+    # window.title("路线")
+    # window.geometry("500x400")
+
+    # canvas = tk.Canvas(window, width=500, height=400)
+
+    # imgfile = Image.open(IMG_PATH)
+    # photo = ImageTk.PhotoImage(imgfile)
+    # image = canvas.create_image(0, 0, anchor=tk.NW, image=photo)
+
+    # canvas.pack()
+
+    # window.mainloop()
+
+    pass
 
 
 if __name__ == "__main__":
