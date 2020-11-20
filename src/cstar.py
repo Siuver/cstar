@@ -1,102 +1,84 @@
-import os
-import tkinter as tk
-from PIL import Image, ImageTk
-
-from map import MAP_CONFIG
-
-ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
-IMG_PATH = os.path.join(ROOT_DIR, "../img/cao.png")
-
-
 class Cstar:
-    def __init__(self, mapConfig):
-        self.mapConfig = mapConfig
+    def __init__(self, map_config):
+        self.map_config = map_config
+        self.length_weight = 0.7
+        self.t_add_weight = 0.3
 
-    def all_route(self, s, e, visited, path, node2route):
+    # 返回以某一点为起点的最长路径
+    def cal_longest_route(self, start_node):
+        self.best_route = None
+
+        for node in self.map_config.keys():
+            visited = [False] * len(self.map_config.keys())
+            path = []
+            self.__all_route(start_node, node, visited, path)
+
+        return self.best_route
+
+    # 计算某一条路线的权值，权值越大路线越佳
+    def get_route_weight(self, route):
+        length = len(route)
+        
+        t_add = 0
+        for i in range(length):
+            if i - 1 not in self.map_config:
+                t_add += 1
+            else:
+                t_add += 1 / (len(self.map_config[i - 1]['link_nodes']) - 1)
+
+        return self.length_weight * length + self.t_add_weight * t_add, length, t_add
+
+    # 处理递归算法pop出的一条路线
+    def __pop_route(self, route):
+        if not self.__check_route_valid(route):
+            return
+
+        if not self.best_route:
+            self.best_route = route
+        else:
+            cur_best_weight = self.get_route_weight(self.best_route)
+            route_weight = self.get_route_weight(route)
+            if route_weight > cur_best_weight:
+                self.best_route = route
+
+    # 递归算法
+    def __all_route(self, s, e, visited, path):
         visited[s] = True
         path.append(s)
 
         if s == e:
-            if e not in node2route:
-                node2route[e] = []
-            node2route[e].append(path[:])
+            self.__pop_route(path[:])
         else:
-            nodeConfig = self.mapConfig[s]
-            for linkNode in nodeConfig['link_node']:
-                if visited[linkNode] == False and nodeConfig['valid'] == True:
-                    self.all_route(linkNode, e, visited, path, node2route)
+            node_config = self.map_config[s]
+            for link_node in node_config['link_nodes']:
+                if visited[link_node] == False:
+                    self.__all_route(link_node, e, visited, path)
 
         path.pop()
         visited[s] = False
 
-    def checkRouteValid(self, route):
+    # 判断某条路线是否合法，必须满足以下条件
+    # 1. 路线中的点唯一，不允许出现重复的点（递归算法本身不会产出这种路线）
+    # 2. 路线中的所有点只能两两相连，不允许出现多点相连的情况 
+    def __check_route_valid(self, route):
         valid = True
-        lastNode = -1
+        last_node = -1
 
-        closedNode = []
-        routeLength = len(route)
+        closed_nodes = []
+        route_length = len(route)
 
-        for i in range(routeLength):
-            passNode = route[i]
-            if passNode in closedNode:
+        for i in range(route_length):
+            pass_node = route[i]
+            if pass_node in closed_nodes:
                 valid = False
                 break
 
-            closedNode.append(valid)
-            if lastNode >= 0:
-                for linkNode in self.mapConfig[lastNode]['link_node']:
-                    if linkNode not in closedNode:
-                        closedNode.append(linkNode)
+            closed_nodes.append(pass_node)
+            if last_node >= 0:
+                for link_node in self.map_config[last_node]['link_nodes']:
+                    if link_node not in closed_nodes:
+                        closed_nodes.append(link_node)
 
-            lastNode = passNode
+            last_node = pass_node
 
         return valid
-
-    def cal_longest_route(self, startNode):
-        longest_route = []
-
-        node2route = {}
-        for node in self.mapConfig.keys():
-            visited = [False] * len(self.mapConfig.keys())
-            path = []
-            self.all_route(startNode, node, visited, path, node2route)
-
-        for node, routes in node2route.items():
-            for route in routes:
-                routeLength = len(route)
-
-                if routeLength < len(longest_route):
-                    continue
-
-                if self.checkRouteValid(route):
-                    longest_route = route
-
-        return longest_route
-
-
-def main():
-    # cstar = Cstar(MAP_CONFIG)
-    # print(cstar.cal_longest_route(0))
-    window = tk.Tk()
-
-    window.title("路线")
-    window.geometry("500x400")
-
-    canvas = tk.Canvas(window, width=500, height=400)
-
-    imgfile = Image.open(IMG_PATH)
-    photo = ImageTk.PhotoImage(imgfile)
-    image = canvas.create_image(0, 0, anchor=tk.NW, image=photo)
-
-    canvas.pack()
-
-    canvas.bind( tk.EventType.ButtonPress., '<Button-1>', left1)
-    window.mainloop()
-
-
-def left1(e):
-    pass
-
-
-if __name__ == "__main__":
-    main()

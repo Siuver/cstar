@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<e:Skin class="asdfasdf" width="1024" height="1024" xmlns:e="http://ns.egret.com/eui" xmlns:w="http://ns.egret.com/wing"
+        xmlns:customui="customui.*">
+	<w:Config id="175e35d7718"/>
+	<e:Image id="1" source="chengjiu_icon_zhanli_png" x="124" y="970" anchorOffsetX="41.5" anchorOffsetY="41.5" scaleX="0.5" scaleY="0.5"/>
+</e:Skin>
