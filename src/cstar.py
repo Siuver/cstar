@@ -8,10 +8,19 @@ class Cstar:
     def cal_longest_route(self, start_node):
         self.best_route = None
 
-        for node in self.map_config.keys():
-            visited = [False] * len(self.map_config.keys())
-            path = []
-            self.__all_route(start_node, node, visited, path)
+        visited = [False] * len(self.map_config.keys())
+        path = []
+        self.__all_route(start_node, 15, visited, path)
+
+        # for i in range(10):
+        #     visited = [False] * len(self.map_config.keys())
+        #     path = []
+        #     self.__all_route(start_node, i, visited, path)
+
+        # for node in self.map_config.keys():
+        #     visited = [False] * len(self.map_config.keys())
+        #     path = []
+        #     self.__all_route(start_node, node, visited, path)
 
         return self.best_route
 
@@ -24,7 +33,8 @@ class Cstar:
             if i - 1 not in self.map_config:
                 t_add += 1
             else:
-                t_add += 1 / (len(self.map_config[i - 1]['link_nodes']) - 1)
+                # t_add += 1 / (len(self.map_config[i - 1]['link_nodes']) - 1)
+                t_add += 1
 
         return self.length_weight * length + self.t_add_weight * t_add, length, t_add
 
@@ -32,6 +42,8 @@ class Cstar:
     def __pop_route(self, route):
         if not self.__check_route_valid(route):
             return
+        
+        # print(route)
 
         if not self.best_route:
             self.best_route = route
@@ -51,7 +63,7 @@ class Cstar:
         else:
             node_config = self.map_config[s]
             for link_node in node_config['link_nodes']:
-                if visited[link_node] == False:
+                if link_node in self.map_config and visited[link_node] == False:
                     self.__all_route(link_node, e, visited, path)
 
         path.pop()
