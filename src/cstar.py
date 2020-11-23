@@ -3,6 +3,8 @@ class Cstar:
         self.map_config = map_config
         self.length_weight = 0.7
         self.t_add_weight = 0.3
+        self.START_POINT = [0, 1, 2, 3]
+        self.CLOSED_POINT = [29, 49]
 
     # 返回以某一点为起点的最长路径
     def cal_longest_route(self, start_node):
@@ -30,11 +32,14 @@ class Cstar:
         
         t_add = 0
         for i in range(length):
-            if i - 1 not in self.map_config:
+            if i - 1 not in route:
                 t_add += 1
             else:
-                # t_add += 1 / (len(self.map_config[i - 1]['link_nodes']) - 1)
-                t_add += 1
+                last_link_num = len(self.map_config[route[i - 1]]['link_nodes'])
+                if last_link_num > 1:
+                    last_link_num -= 1
+                t_add += 1 / last_link_num
+                # t_add += 1
 
         return self.length_weight * length + self.t_add_weight * t_add, length, t_add
 
@@ -63,7 +68,7 @@ class Cstar:
         else:
             node_config = self.map_config[s]
             for link_node in node_config['link_nodes']:
-                if link_node in self.map_config and visited[link_node] == False:
+                if link_node not in self.START_POINT and link_node not in self.CLOSED_POINT and visited[link_node] == False:
                     self.__all_route(link_node, e, visited, path)
 
         path.pop()
