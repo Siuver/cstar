@@ -6,9 +6,9 @@ from cstar import Cstar
 
 def main():
     map_config = get_map_config(LINK, MAP)
-    window = MyTk(map_config)
-    # cstar = Cstar(map_config)
-    # print(cstar.cal_longest_route(0))
+    # window = MyTk(map_config)
+    cstar = Cstar(map_config)
+    print(cstar.cal_longest_route(0), cstar.num)
 
 def get_map_config(link, map):
     for key, value in map.items():

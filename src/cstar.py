@@ -47,17 +47,17 @@ class Cstar:
     def __pop_route(self, route):
         if not self.__check_route_valid(route):
             return
-        
-        # print(route)
 
         if not self.best_route:
             self.best_route = route
+            self.best_weight = self.get_route_weight(self.best_route)
         else:
-            cur_best_weight = self.get_route_weight(self.best_route)
             route_weight = self.get_route_weight(route)
-            if route_weight > cur_best_weight:
+            if route_weight > self.best_weight:
                 self.best_route = route
 
+    num = 0
+    
     # 递归算法
     def __all_route(self, s, e, visited, path):
         visited[s] = True
@@ -69,6 +69,7 @@ class Cstar:
             node_config = self.map_config[s]
             for link_node in node_config['link_nodes']:
                 if link_node not in self.START_POINT and link_node not in self.CLOSED_POINT and visited[link_node] == False:
+                    self.num += 1
                     self.__all_route(link_node, e, visited, path)
 
         path.pop()
